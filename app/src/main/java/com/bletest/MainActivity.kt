@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             }*/
         }
         viewModel.device1Data.observe(this){data ->
-            //rpm1.text = "Device 1: ${data.trim().ifEmpty { "0" }}"
+            rpm1.text = "Device 1: ${data.trim().ifEmpty { "0" }}"
             if (listenData){
                 val temp = if (data.trim().isEmpty()) 0 else data.trim().toInt()
                 rpm1value = if (temp>0) temp else rpm1value
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         }
         //animateColorAndSize()
         viewModel.device2Data.observe(this){data ->
-            //rpm2.text = "Device 2: ${data.trim().ifEmpty { "0" }}"
+            rpm2.text = "Device 2: ${data.trim().ifEmpty { "0" }}"
             if (listenData){
                 val temp = if (data.trim().isEmpty()) 0 else data.trim().toInt()
                 rpm2value = if (temp>0) temp else rpm2value
@@ -252,25 +252,25 @@ class MainActivity : AppCompatActivity() {
         ivCycle.visibility = View.GONE
         textView.visibility = View.VISIBLE
         val percentage = ((((rpm1value/2)+(rpm2value/2)))/maxValue)*100 // Ensure the value is between 0 and 1
-        val redPercentage = 1.0f - percentage
-        val bluePercentage = percentage
+        val redPercentage = 1.0f - (percentage/100.0)
+        val bluePercentage = percentage/100.0
 
         // Calculate the start and end colors for the gradient
         val startColor = android.graphics.Color.rgb(
-            (255 * redPercentage).toInt(),
-            (255 * redPercentage).toInt(),
-            (255 * redPercentage).toInt()
+            (255).toInt(),
+            (255).toInt(),
+            (255).toInt()
         )
 
         val endColor = android.graphics.Color.rgb(
-            (255 * bluePercentage).toInt(),
-            (255 * bluePercentage).toInt(),
+            (255).toInt(),
+            (255).toInt(),
             0
         )
 
         // Calculate the gradient color for the entire text (bottom to top)
         val gradient = LinearGradient(
-            0f, 0f, 0f, textView.height.toFloat(),  // Start from the bottom and end at the top
+            0f, 0f, 0f, (textView.height.toFloat()*redPercentage.toFloat()),  // Start from the bottom and end at the top
             startColor, endColor, Shader.TileMode.CLAMP
         )
 
@@ -286,13 +286,13 @@ class MainActivity : AppCompatActivity() {
         // Start font size animation
         if (percentage>=100){
             listenData = false
-            val newSize = 150
+            val newSize = 450
             val sizeAnimator = ValueAnimator.ofFloat(textView.textSize, newSize.toFloat())
             sizeAnimator.addUpdateListener { animator ->
                 val animatedValue = animator.animatedValue as Float
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, animatedValue)
             }
-            sizeAnimator.duration = 1200 // Set the duration of the font size change animation
+            sizeAnimator.duration = 2000 // Set the duration of the font size change animation
             sizeAnimator.start()
             sizeAnimator.addListener(object : Animator.AnimatorListener{
                 override fun onAnimationStart(p0: Animator) {
@@ -315,8 +315,9 @@ class MainActivity : AppCompatActivity() {
 
 
         // Update the counter and repeat the animation if the counter is less than 180
-        /*if (counter < 180) {
-            counter += 20
+       /* if (rpm1value < 300) {
+            rpm1value += 10
+            rpm2value += 10
             textView.postDelayed({ animateColorAndSize() }, 500) // Delay for the next animation
         }*/
     }
@@ -336,7 +337,7 @@ class MainActivity : AppCompatActivity() {
         textView.paint.shader = null
         textView.invalidate()
         textView.setTextColor(ContextCompat.getColor(this@MainActivity,R.color.white))
-        textView.textSize = 70f
+        textView.textSize = 170f
         ivCycle.visibility = View.VISIBLE
         textView.visibility = View.GONE
         Handler(Looper.getMainLooper()).postDelayed({

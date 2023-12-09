@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="24dp"
-        android:visibility="gone"
+        android:layout_marginTop="-100dp"
+        android:visibility="visible"
         android:textColor="@color/teal_700"/>
 
     <TextView
@@ -20,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textSize="24dp"
-        android:visibility="gone"
+        android:layout_marginBottom="50dp"
+        android:visibility="visible"
         android:textColor="@color/teal_700"/>
 
     <TextView
@@ -35,7 +37,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-100dp"
         android:textSize="30dp"
         android:text="START PEDALING FOR THE CHANGE"
         android:fontFamily="@font/volvo_broad_pro"
@@ -48,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:textSize="70dp"
+        android:textSize="170dp"
         android:text="EAAS"
         android:fontFamily="@font/volvo_broad_pro"
         android:gravity="center"
