@@ -19,7 +19,10 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -56,6 +59,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var rpm1:TextView
     lateinit var rpm2:TextView
+
+    var listOfPercentage = mutableListOf<Int>()
 
     var rpm1value = 0
     var rpm2value = 0
@@ -136,6 +141,30 @@ class MainActivity : AppCompatActivity() {
             // Location permissions are not granted, request them
             requestLocationPermissions()
         }
+
+        val spinner: Spinner = findViewById(R.id.spinner)
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        val values = (300..700 step 50).map { it.toString() }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, values)
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // Apply the adapter to the spinner
+        spinner.adapter = adapter
+
+        // Set up a listener to handle item selections
+        spinner.setOnItemSelectedListener(object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                val selectedValue = values[position]
+                maxValue = selectedValue.toInt()
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+        });
 
         // Start the animation when the activity is created
         //animateColorAndSize()
@@ -247,7 +276,7 @@ class MainActivity : AppCompatActivity() {
         loadingDialog.dismiss()
     }
 
-    private val maxValue = 300
+    private var maxValue = 500
     private fun animateColorAndSize() {
         ivCycle.visibility = View.GONE
         textView.visibility = View.VISIBLE
@@ -282,9 +311,18 @@ class MainActivity : AppCompatActivity() {
             textView.invalidate()
         }
 
+        if (percentage>=90){
+            listOfPercentage.add(percentage)
+        }else{
+            listOfPercentage.clear()
+        }
+        var checkedLastFewValues = false
+        if (listOfPercentage.size>=10){
+            checkedLastFewValues = listOfPercentage.all { it>=90 }
+        }
 
         // Start font size animation
-        if (percentage>=100){
+        if ((percentage>=100) || checkedLastFewValues){
             listenData = false
             val newSize = 450
             val sizeAnimator = ValueAnimator.ofFloat(textView.textSize, newSize.toFloat())
@@ -340,6 +378,7 @@ class MainActivity : AppCompatActivity() {
         textView.textSize = 170f
         ivCycle.visibility = View.VISIBLE
         textView.visibility = View.GONE
+        listOfPercentage.clear()
         Handler(Looper.getMainLooper()).postDelayed({
             rpm1value = 0
             rpm2value = 0
