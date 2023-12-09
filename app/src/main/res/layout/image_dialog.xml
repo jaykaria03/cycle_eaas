@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="400dp"
+    android:layout_height="650dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    app:cardCornerRadius="6dp"
+    app:cardBackgroundColor="@color/white">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+                <TextView
+                    android:layout_marginTop="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="30sp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:fontFamily="@font/volvo_novum_regular"
+                    android:text="Congratulation!!!\nScan me to collect your Digital Coupon"/>
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="400dp"
+                    android:layout_height="400dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/new_qr"/>
+
+                <TextView
+                    android:id="@+id/btnClose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:layout_marginTop="30dp"
+                    android:layout_gravity="center"
+                    android:text="Close"
+                    android:fontFamily="@font/volvo_novum_regular"
+                    android:textColor="@color/black"/>
+        </LinearLayout>
+</androidx.cardview.widget.CardView>

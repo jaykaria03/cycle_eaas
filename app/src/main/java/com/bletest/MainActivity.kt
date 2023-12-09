@@ -1,6 +1,7 @@
 package com.bletest
 
 import android.Manifest
+import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.ProgressDialog
@@ -8,16 +9,22 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
+import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.animation.addListener
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.toSpannable
@@ -40,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var textView: TextView
+    private lateinit var ivCycle: ImageView
     private var counter = 0
 
     private val bluetoothPermissionRequestCode = 1
@@ -52,11 +60,14 @@ class MainActivity : AppCompatActivity() {
     var rpm1value = 0
     var rpm2value = 0
 
+    var listenData = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         textView = findViewById(R.id.textview)
+        ivCycle = findViewById(R.id.iv_cycle)
 
         rpm1 = findViewById(R.id.editTextData)
         rpm2 = findViewById(R.id.editTextData1)
@@ -70,16 +81,21 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.device1Data.observe(this){data ->
             //rpm1.text = "Device 1: ${data.trim().ifEmpty { "0" }}"
-            val temp = if (data.trim().isEmpty()) 0 else data.trim().toInt()
-            rpm1value = if (temp>0) temp else rpm1value
-            animateColorAndSize()
-        }
+            if (listenData){
+                val temp = if (data.trim().isEmpty()) 0 else data.trim().toInt()
+                rpm1value = if (temp>0) temp else rpm1value
+                animateColorAndSize()
+            }
 
+        }
+        //animateColorAndSize()
         viewModel.device2Data.observe(this){data ->
             //rpm2.text = "Device 2: ${data.trim().ifEmpty { "0" }}"
-            val temp = if (data.trim().isEmpty()) 0 else data.trim().toInt()
-            rpm2value = if (temp>0) temp else rpm2value
-            animateColorAndSize()
+            if (listenData){
+                val temp = if (data.trim().isEmpty()) 0 else data.trim().toInt()
+                rpm2value = if (temp>0) temp else rpm2value
+                animateColorAndSize()
+            }
         }
 
         // Observe LiveData in the ViewModel and update UI as needed
@@ -231,8 +247,10 @@ class MainActivity : AppCompatActivity() {
         loadingDialog.dismiss()
     }
 
-    private val maxValue = 150
+    private val maxValue = 300
     private fun animateColorAndSize() {
+        ivCycle.visibility = View.GONE
+        textView.visibility = View.VISIBLE
         val percentage = ((((rpm1value/2)+(rpm2value/2)))/maxValue)*100 // Ensure the value is between 0 and 1
         val redPercentage = 1.0f - percentage
         val bluePercentage = percentage
@@ -256,7 +274,7 @@ class MainActivity : AppCompatActivity() {
             startColor, endColor, Shader.TileMode.CLAMP
         )
 
-        if (percentage<=maxValue){
+        if (percentage<=100){
             // Apply the gradient to the text
             textView.paint.shader = gradient
 
@@ -266,15 +284,33 @@ class MainActivity : AppCompatActivity() {
 
 
         // Start font size animation
-        if (percentage>=maxValue){
-            val newSize = 90
+        if (percentage>=100){
+            listenData = false
+            val newSize = 150
             val sizeAnimator = ValueAnimator.ofFloat(textView.textSize, newSize.toFloat())
             sizeAnimator.addUpdateListener { animator ->
                 val animatedValue = animator.animatedValue as Float
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, animatedValue)
             }
-            sizeAnimator.duration = 500 // Set the duration of the font size change animation
+            sizeAnimator.duration = 1200 // Set the duration of the font size change animation
             sizeAnimator.start()
+            sizeAnimator.addListener(object : Animator.AnimatorListener{
+                override fun onAnimationStart(p0: Animator) {
+                }
+
+                override fun onAnimationEnd(p0: Animator) {
+                    val imageDialog = ImageDialog(this@MainActivity, R.drawable.new_qr, ::onCloseButtonClick)
+                    imageDialog.show()
+                }
+
+                override fun onAnimationCancel(p0: Animator) {
+
+                }
+
+                override fun onAnimationRepeat(p0: Animator) {
+                }
+
+            })
         }
 
 
@@ -292,5 +328,21 @@ class MainActivity : AppCompatActivity() {
         val g = (Color.green(color1) * ratio + Color.green(color2) * inverseRatio).toInt()
         val b = (Color.blue(color1) * ratio + Color.blue(color2) * inverseRatio).toInt()
         return Color.rgb(r, g, b)
+    }
+
+    private fun onCloseButtonClick() {
+        // Your code here
+
+        textView.paint.shader = null
+        textView.invalidate()
+        textView.setTextColor(ContextCompat.getColor(this@MainActivity,R.color.white))
+        textView.textSize = 70f
+        ivCycle.visibility = View.VISIBLE
+        textView.visibility = View.GONE
+        Handler(Looper.getMainLooper()).postDelayed({
+            rpm1value = 0
+            rpm2value = 0
+            listenData = true
+        }, 500)
     }
 }
