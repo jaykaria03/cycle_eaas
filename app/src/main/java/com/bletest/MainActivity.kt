@@ -332,7 +332,7 @@ lateinit var waterWaveView: WaterWaveView
                 val animatedValue = animator.animatedValue as Float
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, animatedValue)
             }
-            sizeAnimator.duration = 2000 // Set the duration of the font size change animation
+            sizeAnimator.duration = 3500 // Set the duration of the font size change animation
             sizeAnimator.start()
             sizeAnimator.addListener(object : Animator.AnimatorListener{
                 override fun onAnimationStart(p0: Animator) {
