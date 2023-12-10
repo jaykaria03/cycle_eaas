@@ -2,23 +2,19 @@ package com.bletest
 
 import android.Manifest
 import android.animation.Animator
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.ProgressDialog
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
@@ -27,16 +23,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.animation.addListener
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.text.toSpannable
-import androidx.core.text.toSpanned
-import java.text.SimpleDateFormat
-import java.util.Collections.min
-import java.util.Date
-import java.util.Locale
-import kotlin.math.min
+import com.orbitalsonic.waterwave.WaterWaveView
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -59,8 +49,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var rpm1:TextView
     lateinit var rpm2:TextView
-
-    var listOfPercentage = mutableListOf<Int>()
+lateinit var waterWaveView: WaterWaveView
+    var listOfPercentage = mutableListOf<Float>()
 
     var rpm1value = 0
     var rpm2value = 0
@@ -76,6 +66,16 @@ class MainActivity : AppCompatActivity() {
 
         rpm1 = findViewById(R.id.editTextData)
         rpm2 = findViewById(R.id.editTextData1)
+
+        waterWaveView = findViewById(R.id.waterWaveView)
+        waterWaveView.setShape(WaterWaveView.Shape.CIRCLE)
+        waterWaveView.setHideText(true)
+        waterWaveView.max = 100
+        waterWaveView.progress = 0
+        waterWaveView.setWaveStrong(100)
+        waterWaveView.setShapePadding(10F)
+        waterWaveView.setAnimationSpeed(100)
+
 
         viewModel.isLoading.observe(this) { isLoading ->
             /*if (isLoading) {
@@ -280,8 +280,9 @@ class MainActivity : AppCompatActivity() {
     private fun animateColorAndSize() {
         ivCycle.visibility = View.GONE
         textView.visibility = View.VISIBLE
-        val percentage = ((((rpm1value/2)+(rpm2value/2)))/maxValue)*100 // Ensure the value is between 0 and 1
-        val redPercentage = 1.0f - (percentage/100.0)
+        waterWaveView.visibility = View.VISIBLE
+        val percentage = ((((rpm1value/2f)+(rpm2value/2f)))/maxValue.toFloat())*100 // Ensure the value is between 0 and 1
+        val redPercentage = 1.5f - (percentage/100.0)
         val bluePercentage = percentage/100.0
 
         // Calculate the start and end colors for the gradient
@@ -303,26 +304,27 @@ class MainActivity : AppCompatActivity() {
             startColor, endColor, Shader.TileMode.CLAMP
         )
 
-        if (percentage<=100){
+        waterWaveView.progress = percentage.toInt()
+        /*if (percentage in 11f..100f){
             // Apply the gradient to the text
             textView.paint.shader = gradient
 
             // Trigger a redraw to make the gradient change visible
             textView.invalidate()
-        }
+        }*/
 
-        if (percentage>=90){
+        if (percentage>=90f){
             listOfPercentage.add(percentage)
         }else{
             listOfPercentage.clear()
         }
         var checkedLastFewValues = false
         if (listOfPercentage.size>=10){
-            checkedLastFewValues = listOfPercentage.all { it>=90 }
+            checkedLastFewValues = listOfPercentage.all { it>=90f }
         }
 
         // Start font size animation
-        if ((percentage>=100) || checkedLastFewValues){
+        if ((percentage>=100f) || checkedLastFewValues){
             listenData = false
             val newSize = 450
             val sizeAnimator = ValueAnimator.ofFloat(textView.textSize, newSize.toFloat())
@@ -378,7 +380,9 @@ class MainActivity : AppCompatActivity() {
         textView.textSize = 170f
         ivCycle.visibility = View.VISIBLE
         textView.visibility = View.GONE
+        waterWaveView.visibility = View.GONE
         listOfPercentage.clear()
+        waterWaveView.progress = 0
         Handler(Looper.getMainLooper()).postDelayed({
             rpm1value = 0
             rpm2value = 0

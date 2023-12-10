@@ -59,6 +59,8 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.0")
     annotationProcessor("androidx.room:room-compiler:2.6.0")
 
+    implementation ("com.github.orbitalsonic:Water-Wave-Animation-Android:1.0.0")
+
 /*    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")*/
