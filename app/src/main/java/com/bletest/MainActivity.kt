@@ -93,7 +93,7 @@ lateinit var waterWaveView: WaterWaveView
             }
 
         }
-        //animateColorAndSize()
+        animateColorAndSize()
         viewModel.device2Data.observe(this){data ->
             rpm2.text = "Device 2: ${data.trim().ifEmpty { "0" }}"
             if (listenData){
@@ -326,7 +326,7 @@ lateinit var waterWaveView: WaterWaveView
         // Start font size animation
         if ((percentage>=100f) || checkedLastFewValues){
             listenData = false
-            val newSize = 450
+            val newSize = 950
             val sizeAnimator = ValueAnimator.ofFloat(textView.textSize, newSize.toFloat())
             sizeAnimator.addUpdateListener { animator ->
                 val animatedValue = animator.animatedValue as Float
