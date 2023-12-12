@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var rpm1:TextView
     lateinit var rpm2:TextView
-lateinit var waterWaveView: WaterWaveView
+    lateinit var waterWaveView: WaterWaveView
     var listOfPercentage = mutableListOf<Float>()
 
     var rpm1value = 0
@@ -93,7 +93,7 @@ lateinit var waterWaveView: WaterWaveView
             }
 
         }
-        animateColorAndSize()
+        //animateColorAndSize()
         viewModel.device2Data.observe(this){data ->
             rpm2.text = "Device 2: ${data.trim().ifEmpty { "0" }}"
             if (listenData){
@@ -355,11 +355,11 @@ lateinit var waterWaveView: WaterWaveView
 
 
         // Update the counter and repeat the animation if the counter is less than 180
-       /* if (rpm1value < 300) {
-            rpm1value += 10
-            rpm2value += 10
-            textView.postDelayed({ animateColorAndSize() }, 500) // Delay for the next animation
-        }*/
+        /* if (rpm1value < 300) {
+             rpm1value += 10
+             rpm2value += 10
+             textView.postDelayed({ animateColorAndSize() }, 500) // Delay for the next animation
+         }*/
     }
 
 
@@ -376,8 +376,7 @@ lateinit var waterWaveView: WaterWaveView
 
         textView.paint.shader = null
         textView.invalidate()
-        textView.setTextColor(ContextCompat.getColor(this@MainActivity,R.color.white))
-        textView.textSize = 170f
+        textView.textSize = 330f
         ivCycle.visibility = View.VISIBLE
         textView.visibility = View.GONE
         waterWaveView.visibility = View.GONE
